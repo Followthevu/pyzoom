@@ -1,7 +1,7 @@
 from json import JSONDecodeError
 import logging
 import time
-from typing import Dict
+from typing import Dict, Union
 
 import requests
 import attr
@@ -15,6 +15,7 @@ class APIClientBase:
     access_token: str = attr.ib(repr=False)
     refresh_token: str = attr.ib(repr=False)
     base_url: str = attr.ib(repr=False, default="https://api.zoom.us/v2")
+    proxies: Union[dict, None] = attr.ib(repr=False, default=None)
 
     name = "zoom_api_client"
     user_id: str = "me"
@@ -37,7 +38,10 @@ class APIClientBase:
         logging.debug(f"Making {method} request to {endpoint}")
         session = requests.Session()
 
-        r = session.request(method, url, headers=headers, params=query, json=body)
+        if self.proxies:
+            r = session.request(method, url, headers=headers, params=query, json=body, proxies=self.proxies)
+        else:
+            r = session.request(method, url, headers=headers, params=query, json=body)
 
         if 200 <= r.status_code < 300:
             return r
