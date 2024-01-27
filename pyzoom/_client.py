@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import List
+from typing import List, Union
 
 import attr
 import shortuuid
@@ -192,6 +192,7 @@ class ZoomClient:
     access_token: str = attr.ib(repr=False)
     refresh_token: str = attr.ib(repr=False, default=None)
     base_url: str = attr.ib(repr=False, default="https://api.zoom.us/v2")
+    proxies: Union[dict, None] = attr.ib(repr=False, default=None)
 
     raw: APIClientBase = attr.ib(init=False, repr=False)
     meetings: MeetingsComponent = attr.ib(init=False, repr=False)
@@ -202,6 +203,7 @@ class ZoomClient:
             access_token=self.access_token,
             refresh_token=self.refresh_token,
             base_url=self.base_url,
+            proxies=self.proxies,
         )
         self.meetings: MeetingsComponent = MeetingsComponent(self.raw)
         self.users: UsersComponent = UsersComponent(self.raw)
